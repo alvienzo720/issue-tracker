@@ -42,3 +42,22 @@ export async function DELETE(request: NextRequest) {
     );
   }
 }
+
+export async function PUT(request: NextRequest) {
+  try {
+    const { id, title, description } = await request.json();
+    if (!id) {
+      return NextResponse.json({ message: "No id provided" }, { status: 400 });
+    }
+    const updateIssue = await prisma.issue.update({
+      where: { id },
+      data: { title, description },
+    });
+    return NextResponse.json(updateIssue, { status: 200 });
+  } catch (error) {
+    return NextResponse.json(
+      { error: "Internal Server Error" },
+      { status: 500 }
+    );
+  }
+}
