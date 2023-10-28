@@ -17,8 +17,28 @@ export async function POST(request: NextRequest) {
 export async function GET(request: NextRequest) {
   try {
     const issues = await prisma.issue.findMany();
-    return NextResponse.json(issues);
+    return NextResponse.json({ issues: issues }, { status: 200 });
   } catch (error) {
-    console.log(error);
+    return NextResponse.json({
+      error: "Failed to fetch all issues from the Database",
+    });
+  }
+}
+
+export async function DELETE(request: NextRequest) {
+  try {
+    const { id } = await request.json();
+    if (!id) {
+      return NextResponse.json({ message: "No id provided" }, { status: 400 });
+    }
+    const deletedIssue = await prisma.issue.delete({
+      where: { id: Number(id) },
+    });
+    return NextResponse.json(deletedIssue, { status: 200 });
+  } catch (error) {
+    return NextResponse.json(
+      { error: "An Internal Server error occured" },
+      { status: 500 }
+    );
   }
 }
